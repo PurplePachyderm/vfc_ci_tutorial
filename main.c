@@ -29,7 +29,7 @@ float recursiveDotprod(float * x, float * y, size_t n) {
 
 	// Recursive case
 	else {
-		// Split arrays in 2 and do a recursive call for each half
+		// Split array in 2 and do a recursive call for each half
 		return recursiveDotprod(x, y, n / 2) +
 			recursiveDotprod(&(x[n/2]), &(y[n/2]), n / 2);
 	}
@@ -39,11 +39,11 @@ float recursiveDotprod(float * x, float * y, size_t n) {
 int main(void) {
 	vfc_probes probes = vfc_init_probes();
 
-	srand(42);
 	size_t n = 4096;
 	float * x = malloc(n * sizeof(float));
 	float * y = malloc(n * sizeof(float));
 
+	srand(42);
 	for(size_t i=0; i<n; i++) {
 		x[i] = (float) rand() / RAND_MAX;
 		y[i] = (float) rand() / RAND_MAX;
@@ -56,8 +56,8 @@ int main(void) {
 	float recursiveRes = recursiveDotprod(x, y, n);
 	vfc_probe(&probes, "dotprod_test", "recursive", recursiveRes);
 
-	printf("Naive dotprod = %.12f \n", naiveRes);
-	printf("Recursive dotprod = %.12f \n", recursiveRes);
+	printf("Naive dotprod = %.7f \n", naiveRes);
+	printf("Recursive dotprod = %.7f \n", recursiveRes);
 
 	vfc_dump_probes(&probes);
 
