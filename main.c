@@ -3,6 +3,7 @@
 #include <time.h>
 #include <vfc_probes.h>
 
+#define N 4096
 
 float naiveDotprod(float * x, float * y, size_t n) {
 	float res = 0;
@@ -16,8 +17,7 @@ float naiveDotprod(float * x, float * y, size_t n) {
 
 
 float recursiveDotprod(float * x, float * y, size_t n) {
-
-	// NOTE This implementation assumes that n can be written as 2^k
+	// NOTE This implementation assumes that N can be written as 2^k
 	if((n & (n - 1)) != 0) {
 		return 0;
 	}
@@ -39,21 +39,20 @@ float recursiveDotprod(float * x, float * y, size_t n) {
 int main(void) {
 	vfc_probes probes = vfc_init_probes();
 
-	size_t n = 4096;
-	float * x = malloc(n * sizeof(float));
-	float * y = malloc(n * sizeof(float));
+	float x [N];
+	float y [N];
 
 	srand(42);
-	for(size_t i=0; i<n; i++) {
+	for(size_t i=0; i<N; i++) {
 		x[i] = (float) rand() / RAND_MAX;
 		y[i] = (float) rand() / RAND_MAX;
 	}
 	srand(time(NULL));
 
-	float naiveRes = naiveDotprod(x, y, n);
+	float naiveRes = naiveDotprod(x, y, N);
 	vfc_probe(&probes, "dotprod_test", "naive", naiveRes);
 
-	float recursiveRes = recursiveDotprod(x, y, n);
+	float recursiveRes = recursiveDotprod(x, y, N);
 	vfc_probe(&probes, "dotprod_test", "recursive", recursiveRes);
 
 	printf("Naive dotprod = %.7f \n", naiveRes);

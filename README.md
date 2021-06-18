@@ -65,27 +65,27 @@ Moreover, you must also include the `vfc_probes.h` header at the beginning of
 
 Now that `vfc_probes` is correctly linked, we can create out probes structure.
 This should be done at the beginning at the main function, for instance after
-the new line 18 (if you added the previous line):
+the new line 20 (if you added the previous line):
 
 ```
-17    int main(void) {
-18 +      vfc_probes probes = vfc_init_probes();
+20    int main(void) {
+21 +      vfc_probes probes = vfc_init_probes();
 ```
 
 Then we will add the probe containing the result of the dotprod. You can
-do this after the new line 31:
+do this after the new line 32:
 
 ```
-31        float naiveRes = naiveDotprod(x, y, n);
-32 +      vfc_probe(&probes, "dotprod_test", "naive", naiveRes);
+32        float naiveRes = naiveDotprod(x, y, n);
+33 +      vfc_probe(&probes, "dotprod_test", "naive", naiveRes);
 ```
 
 Finally, we can dump the probes at the end of the `main` function, just before
 the return statement :
 
 ```
-38 +      vfc_dump_probes(&probes);
-39        return 0;
+37 +      vfc_dump_probes(&probes);
+38        return 0;
 ```
 
 ### 4. Set up vfc_ci and Github Actions
@@ -106,11 +106,11 @@ content:
                     "name": "libinterflop_mca.so",
                     "repetitions": 20
                 },
-				{
-					"name": "libinterflop_mca.so --mode=rr",
-					"repetitions": 20
-				}
-			]
+                {
+                    "name": "libinterflop_mca.so --mode=rr",
+                    "repetitions": 20
+                }
+            ]
         }
     ]
 }
@@ -199,8 +199,7 @@ function:
 
 ```
 float recursiveDotprod(float * x, float * y, size_t n) {
-
-	// NOTE This implementation assumes that n can be written as 2^k
+	// NOTE This implementation assumes that N can be written as 2^k
 	if((n & (n - 1)) != 0) {
 		return 0;
 	}
@@ -222,17 +221,17 @@ float recursiveDotprod(float * x, float * y, size_t n) {
 Call the function in `main.c` and add a new probe :
 
 ```
-55
-56 +      float recursiveRes = recursiveDotprod(x, y, n);
-57 +      vfc_probe(&probes, "dotprod_test", "recursive", recursiveRes);
-58 +
+54
+54 +      float recursiveRes = recursiveDotprod(x, y, n);
+56 +      vfc_probe(&probes, "dotprod_test", "recursive", recursiveRes);
+57 +
 
 ```
 ... and optionally a `printf` statement :
 
 ```
-59    printf("Naive dotprod = %.7f \n", naiveRes);
-60 +  printf("Recursive dotprod = %.7f \n", recursiveRes);
+58    printf("Naive dotprod = %.7f \n", naiveRes);
+59 +  printf("Recursive dotprod = %.7f \n", recursiveRes);
 ```
 
 Finally, commit and push the changes to your remote repository. Optionally,
@@ -246,15 +245,20 @@ tree).
 
 Checkout to the CI branch and launch the test report just like in
 [section 5](5.-serve-the-test-report). A second commit including the new test
-probe should appear. In the "Inspect run" section, which allows to examine
-results from a single run, we should be able to compare the two algorithms :
+probe should appear. In the "Inspect run" section, which allows to examine and
+compare results from a single run, we should be able to compare the two
+algorithms :
 
  ![Naive Vs Recusive dotprod](img/naive_vs_recursive.png "Naive Vs Recusive dotprod")
 
 The following plots seem to validate our assumptions about the recursive
 algorithm : the recursive version has both a higher number of significant digits
-and a lower standard deviation with both backends.
+(around 6.9 vs 5.9 with `libinterflop_mca.so`) and a lower standard deviation
+with both backends.
 
 In this simple example, `vfc_ci` allowed us to quickly compare two algorithms
 and confirm that our second one is numerically more stable than the naive
-version.
+version. Of course, the proposed solution does not aim to be optimal, and you
+can try to implement other methods such as the
+[Kahan summation](https://en.wikipedia.org/wiki/Kahan_summation_algorithm) or
+[Kobbelt's dot product algorithm](https://www.graphics.rwth-aachen.de/media/papers/dot_product.pdf).

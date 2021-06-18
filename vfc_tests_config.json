@@ -8,11 +8,11 @@
                     "name": "libinterflop_mca.so",
                     "repetitions": 20
                 },
-				{
-					"name": "libinterflop_mca.so --mode=rr",
-					"repetitions": 20
-				}
-			]
+                {
+                    "name": "libinterflop_mca.so --mode=rr",
+                    "repetitions": 20
+                }
+            ]
         }
     ]
 }

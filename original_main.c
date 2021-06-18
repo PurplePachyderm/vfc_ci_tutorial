@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define N 4096
+
 
 float naiveDotprod(float * x, float * y, size_t n) {
 	float res = 0;
@@ -16,21 +18,18 @@ float naiveDotprod(float * x, float * y, size_t n) {
 
 int main(void) {
 
-	size_t n = 4096;
-	float * x = malloc(n * sizeof(float));
-	float * y = malloc(n * sizeof(float));
+	float x, y [N];
 
-    srand(42);
-	for(size_t i=0; i<n; i++) {
+	srand(42);
+	for(size_t i=0; i<N; i++) {
 		x[i] = (float) rand() / RAND_MAX;
 		y[i] = (float) rand() / RAND_MAX;
 	}
 	srand(time(NULL));
 
-	float naiveRes = naiveDotprod(x, y, n);
+	float naiveRes = naiveDotprod(x, y, N);
 
 	printf("Naive dotprod = %.7f \n", naiveRes);
 
-	vfc_dump_probes(&probes);
 	return 0;
 }
