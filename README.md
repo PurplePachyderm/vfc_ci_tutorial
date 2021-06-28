@@ -175,9 +175,10 @@ and access the results :
 There's not much to see for now, since there's only one test variable and one
 run in the report. However, if the naive algorithm could seem sufficient at
 first glance, it does have one issue. The values of `x[i] * y[i]` are all
-added to the same `res` variable, which becomes bigger and bigger compared to
-the `x[i] * y[i]` over the course of the summation, thus increasing the chances
-of suffering from absorption errors.
+added to the same `res` variable, which will suffer from increasingly important
+roundoff errors.  Thus, when a cancellation occurs, it will become catastrophic
+and yield an inacurrate result. It has been showed that this error grows
+in `O(n)`.
 
 
 ### 6. Adding an improved method
@@ -185,14 +186,18 @@ of suffering from absorption errors.
 This section introduces another method for the computation of a dot product.
 The idea is to recursively split the `x` and `y` arrays in half as to obtain
 a binary tree, and to compute the `x[i] * y[i]` when the arrays are of size 1
-(which is the base case).
-
-The final result is computed by adding for each node the dot prods of its two
-children, until the root is reached. Since the results of each layer are added
-together and have the same order of magnitude, this way of rearranging the sum
-should avoid absorption errors and improve the numerical accuracy.
+(which is the base case). The final result is computed by adding for each node
+the dot prods of its two children, until the root is reached. This method
+is called [pairwise summation](https://en.wikipedia.org/wiki/Pairwise_summation)
+and is illustrated in the figure below :
 
 ![Recursive dotprod](img/recursive_dotprod.png "Recursive dotprod")
+
+Since the results of each layer are added together instead of being accumulated
+into one term, error will increase after each layer of the tree, instead of
+after each operation, thus growing in `O(log n)` as shown in
+[this article](https://www.maths.manchester.ac.uk/~higham/narep/narep198.pdf).
+
 
 Here is the implementation of the algorithm that you can add before the `main`
 function:
